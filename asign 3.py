@@ -1,3 +1,11 @@
+# Name: Arnold Store II Improved.py
+# Author: Estalin Peña
+# Date Created: November 25, 2022
+# Date Last Modified: December 01, 2022
+# Purpose: Take the order from the customer, ask how many it wishes, and if it is delivery or pickup. And apply discounts if is student.
+
+
+
 
 meals_price = {
     "1": {
@@ -142,6 +150,7 @@ def postalcodechecker(postalCode):
         return False
     else:
         return True if ("".join(numbers).isdigit() == True and "".join(letters).isalpha() == True and postal[3] == " ") else False
+
 def addresschecker(address):
     a = address.split()
     return True if a[0].isdigit()==True and a[1].isalpha()==True and a[-1].upper() in streets else False
@@ -150,20 +159,21 @@ streets = ["STREET", "ROAD", "AVENUE", "FREEWAY", "HIGHWAY", "BOULEVARD", "DRIVE
 
 print("Welcome to Arnold Store II")
 print("")
-print("Please choose your food")
+print("Please enter customer data")
+print("")
 
 while True:
     name = list(map(str, input("Please enter the customer's full name: ").split(" "))) #Input for customer's name, saves first name and last name within different variables
     customer_Data["FirstName"] = name[0]
     customer_Data["LastName"] = name[-1]
-    customer_Data["Address"] = input("Please enter the customer's full delivery address: ")
+    customer_Data["Address"] = input("Please enter the customer's full address: ")
     while addresschecker(customer_Data["Address"])==False:
         customer_Data["Address"] = input("Please enter a valid address: ")
-    customer_Data["Unit"] = input("Please enter the unit number if aplicable: ")#This and the following inputs are inputs for customer's information
+    customer_Data["Unit"] = input("Please enter the unit number: ")#This and the following inputs are inputs for customer's information
     customer_Data["City"] = input("Please enter the customer's city: ")
-    customer_Data["Province"] = input("Please enter the province (in caps): ")
+    customer_Data["Province"] = input("Please enter customer's province: ").upper()
     while customer_Data["Province"] not in canada_provinces.keys() and customer_Data["Province"] not in canada_provinces.values():
-        customer_Data["Province"] = input("Please enter the province: ")
+        customer_Data["Province"] = input("Please enter the province: ").upper()
     customer_Data["PostalCode"] = input("Please enter the customer's postal code. Use the following format [B1B 2C2]: ")
     while postalcodechecker(customer_Data["PostalCode"]) == False:
         customer_Data["PostalCode"] = input("Please enter the customer's postal code. Use the following format [B1B 3B3]: ")
@@ -172,6 +182,7 @@ while True:
         customer_Data["PhoneNumber"] = str(input("Please a valid phone number: ")) 
 
     print("")
+    print("Please choose your favorite dish")
 
     y = False
     while y == False:
@@ -180,7 +191,7 @@ while True:
 
         while x == False:
             for k in meals_price.keys():
-                print(k, meals_price[k]["Name"], meals_price[k]["Price"])
+                print("{} - {} -  ${}".format(k, meals_price[k]["Name"], meals_price[k]["Price"]))
 
             meal_selection = input("Please select your food: ")
             while meal_selection not in meals_price.keys():
@@ -241,6 +252,7 @@ while True:
 
     deli_or_pickup(customer_Data)
     discount()
+    print("")
 
     print("{0} {1}.".format(customer_Data["FirstName"], customer_Data["LastName"]))  # this prints the customer first and last name before the receipt
     print("{0}.".format(customer_Data["PhoneNumber"]))   # prints the customer phone number
@@ -255,15 +267,38 @@ while True:
     print("-" * 75)  # this creates the format of my recepit and the second line
     for k in order_data.keys():
         print(("{}").format(order_data[k]["Name"]), (("{:>15} \t {:>12}${:.2f}  {:>12}${:.2f} ".format(order_data[k]["Quantity"],"", order_data[k]["Price"], "", total()))))  # this prints the name, quantity, the price and the total
-    print("Discount", percentage, ("{:>45s}${:.2f}").format("", applied_disc))  # this prints the percentage discounted of the order
+    print("Discount", percentage, ("{:>53}${:.2f}").format("", applied_disc))  # this prints the percentage discounted of the order
     if customer_Data["Student"] == True:  # if the student status is true it will print the 10% aditional discount
-        print("10%" " Student savings", ("{:>35}- ${:.2f}").format("", applied_student_disc))  # if the student status is true it will print the 10% aditional discount
-    print(("{:>35}Subtotal{:>20s}${:.2f}").format("", "", discount()))  # this prints the subtotal of the recepit
-    print(("{:>35}HST 13%{:>20}${:.2f}").format("", "", discount() * .13))  # this prints the tax
+        print("10%" " Student savings", ("{:>43}- ${:.2f}").format("", applied_student_disc))  # if the student status is true it will print the 10% aditional discount
+    print(("{:>45}Subtotal{:>12}${:.2f}").format("", "", discount()))  # this prints the subtotal of the recepit
+    print(("{:>45}HST 13%{:>13}${:.2f}").format("", "", discount() * .13))  # this prints the tax
     if customer_Data['Delivery'] == True:  # If deliver is true it prints the deliver fee and tips along with the grand total
-        print(("{:>35}Delivery Fee {:>20}${:.2f}").format("", "", customer_Data["DeliveryCharge"]))
-        print(("{:>35}Tips {:>20}${:.2f}").format("", "", customer_Data["Tips"]))
-        print(("{:>35}Grand Total {:>20}${:.2f}").format("", "", discount() * 1.13 + customer_Data["DeliveryCharge"] + float(customer_Data["Tips"]), "CAD"))  # this prints the grand total of the recepit
+        print(("{:>45}Delivery Fee {:>7}${:.2f}").format("", "", customer_Data["DeliveryCharge"]))
+        print(("{:>45}Tips {:>15}${:.2f}").format("", "", customer_Data["Tips"]))
+        print(("{:>45}Grand Total {:>8}${:.2f}").format("", "", discount() * 1.13 + customer_Data["DeliveryCharge"] + float(customer_Data["Tips"]), "CAD"))  # this prints the grand total of the recepit
     else:  # prints the grand total without delivery fee and tips.
-        print(("{:>35}Grand Total {:>20}${:.2f}").format("", "", discount() * 1.13))
+        print(("{:>45}Grand Total {:>10}${:.2f}").format("", "", discount() * 1.13))
     print("-" * 75)  # this creates the format of my recepit and is the last line
+
+    
+
+    receipt = open(r"C:\Users\Estalin Pena\Desktop\Programming-_Tasks\Assignment-3\receipt.txt", "w")
+    receipt.write("\n" + "-" * 75)  # this creates the format of my recepit and the first line between the information in it
+    receipt.write("\nOrder {:>15s} Quantity {:>10s} Item Price {:>10s} Total {} ".format("", "", "", ""))  # this adds the headings of the recepit
+    receipt.write("\n" +"-" * 75)  # this creates the format of my recepit and the second line
+    for k in order_data.keys():
+        receipt.write(("\n{}").format(order_data[k]["Name"]) + (("{:>15} \t {:>12}${:.2f} {:>12}${:.2f} ".format(order_data[k]["Quantity"],"", order_data[k]["Price"], "", total()))))  # this prints the name, quantity, the price and the total
+    receipt.write("\nDiscount" + percentage + ("{:>53s}${:.2f}").format("", applied_disc))  # this prints the percentage discounted of the order
+    if customer_Data["Student"] == True:  # if the student status is true it will print the 10% aditional discount
+        receipt.write("\n10%" " Student savings" + ("{:>43}- ${:.2f}").format("", applied_student_disc))  # if the student status is true it will print the 10% aditional discount
+    receipt.write(("\n{:>45}Subtotal{:>12s}${:.2f}").format("", "", discount()))  # this prints the subtotal of the recepit
+    receipt.write(("\n{:>45}HST 13%{:>13}${:.2f}").format("", "", discount() * .13))  # this prints the tax
+    if customer_Data["Delivery"] == True:  # If deliver is true it prints the deliver fee and tips along with the grand total
+        receipt.write(("\n{:>45}Delivery Fee {:>7}${:.2f}").format("", "", customer_Data["DeliveryCharge"]))
+        receipt.write(("\n{:>45}Tips {:>15}${:.2f}").format("", "", customer_Data["Tips"]))
+        receipt.write(("\n{:>45}Grand Total {:>8}${:.2f}").format("", "", discount() * 1.13 + customer_Data["DeliveryCharge"] + float(customer_Data["Tips"]), "CAD"))  # this prints the grand total of the recepit
+    else:  # prints the grand total without delivery fee and tips.
+        receipt.write(("\n{:>45}Grand Total {:>10}${:.2f}").format("", "", discount() * 1.13))
+    receipt.write("\n" + "-" * 75)  # this creates the format of my recepit and is the last line
+    receipt.close()
+    break
